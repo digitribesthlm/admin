@@ -36,20 +36,23 @@ export default function AnalysisResults({ results }) {
     <div className="bg-white rounded-xl shadow-sm p-6">
       {/* Overall Scores Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="p-4 bg-blue-50 rounded-lg">
-          <h3 className="text-lg font-semibold text-blue-900 mb-2">Weighted Score</h3>
-          <div className="text-3xl font-bold text-blue-600">
+        <div className="p-4 bg-green-50 rounded-lg">
+          <h3 className="text-lg font-semibold text-green-900 mb-2">Human Content Score</h3>
+          <div className="text-3xl font-bold text-green-600">
             {Math.round(results.weighted_score)}%
           </div>
+          <p className="text-sm text-green-700 mt-1">
+            Higher score indicates more human-like content
+          </p>
         </div>
         
         <div className="p-4 bg-red-50 rounded-lg">
-          <h3 className="text-lg font-semibold text-red-900 mb-2">AI Content Score</h3>
+          <h3 className="text-lg font-semibold text-red-900 mb-2">AI Detection Score</h3>
           <div className="text-3xl font-bold text-red-600">
             {Math.round(results.total_ai_score)}%
           </div>
           <p className="text-sm text-red-700 mt-1">
-            Higher score indicates more AI-like content
+            Higher score suggests AI-generated content
           </p>
         </div>
       </div>

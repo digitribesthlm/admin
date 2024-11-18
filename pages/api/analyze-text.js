@@ -4,7 +4,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const ANALYSIS_PROMPT = `Analyze the provided text for human vs. AI characteristics using these metrics, scoring each 0-100:
+const ANALYSIS_PROMPT = `Analyze the provided text for human vs. AI characteristics using these metrics, scoring each 0-100 (where higher scores indicate more human-like characteristics):
 
 1. Natural Language Flow (Weight: 0.30)
 2. Context Coherence (Weight: 0.25)
@@ -26,8 +26,7 @@ Return your analysis in valid JSON format with exactly this structure:
   "purpose_alignment_notes": string,
   "final_analysis": string,
   "confidence_level": number,
-  "weighted_score": number,
-  "total_ai_score": number
+  "weighted_score": number
 }`;
 
 export default async function handler(req, res) {
@@ -99,9 +98,14 @@ export default async function handler(req, res) {
     try {
       const analysis = JSON.parse(analysisText);
       
-      // Add source information to the response
+      // Calculate the AI score as inverse of the weighted score
+      // If weighted_score is high (more human-like), total_ai_score should be low
+      const total_ai_score = Math.max(0, Math.min(100, 100 - analysis.weighted_score));
+      
+      // Add source information and AI score to the response
       const response = {
         ...analysis,
+        total_ai_score,
         source: url ? { type: 'url', value: url } : { type: 'text', value: 'Direct input' }
       };
 
