@@ -1,33 +1,31 @@
 export default function AnalysisResults({ results }) {
+  const characteristics = results.textual_characteristics;
+  const summary = results.analysis_summary;
+
   const metrics = [
     {
       name: 'Natural Language Flow',
-      score: results.natural_language_flow,
-      notes: results.natural_language_flow_notes,
-      weight: 0.30
+      data: characteristics.natural_language_flow,
+      weight: 0.20
     },
     {
       name: 'Context Coherence',
-      score: results.context_coherence,
-      notes: results.context_coherence_notes,
+      data: characteristics.context_coherence,
       weight: 0.25
     },
     {
       name: 'Stylistic Authenticity',
-      score: results.stylistic_authenticity,
-      notes: results.stylistic_authenticity_notes,
+      data: characteristics.stylistic_authenticity,
       weight: 0.20
     },
     {
       name: 'Structural Patterns',
-      score: results.structural_patterns,
-      notes: results.structural_patterns_notes,
-      weight: 0.15
+      data: characteristics.structural_patterns,
+      weight: 0.25
     },
     {
       name: 'Purpose Alignment',
-      score: results.purpose_alignment,
-      notes: results.purpose_alignment_notes,
+      data: characteristics.purpose_alignment,
       weight: 0.10
     }
   ];
@@ -39,7 +37,7 @@ export default function AnalysisResults({ results }) {
         <div className="p-4 bg-green-50 rounded-lg">
           <h3 className="text-lg font-semibold text-green-900 mb-2">Human Content Score</h3>
           <div className="text-3xl font-bold text-green-600">
-            {Math.round(results.weighted_score)}%
+            {Math.round(summary.weighted_score)}%
           </div>
           <p className="text-sm text-green-700 mt-1">
             Higher score indicates more human-like content
@@ -49,7 +47,7 @@ export default function AnalysisResults({ results }) {
         <div className="p-4 bg-red-50 rounded-lg">
           <h3 className="text-lg font-semibold text-red-900 mb-2">AI Detection Score</h3>
           <div className="text-3xl font-bold text-red-600">
-            {Math.round(results.total_ai_score)}%
+            {Math.round(results.ai_probability)}%
           </div>
           <p className="text-sm text-red-700 mt-1">
             Higher score suggests AI-generated content
@@ -66,17 +64,14 @@ export default function AnalysisResults({ results }) {
                 <h3 className="font-semibold">{metric.name}</h3>
                 <p className="text-sm text-gray-500">Weight: {metric.weight * 100}%</p>
               </div>
-              <div className="text-xl font-semibold">{Math.round(metric.score)}%</div>
+              <div className="text-xl font-semibold">{Math.round(metric.data)}%</div>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2.5">
               <div
                 className="bg-blue-600 h-2.5 rounded-full"
-                style={{ width: `${metric.score}%` }}
+                style={{ width: `${metric.data}%` }}
               ></div>
             </div>
-            {metric.notes && (
-              <p className="mt-2 text-sm text-gray-600">{metric.notes}</p>
-            )}
           </div>
         ))}
       </div>

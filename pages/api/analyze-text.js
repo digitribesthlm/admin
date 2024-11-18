@@ -1,32 +1,85 @@
-import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-const ANALYSIS_PROMPT = `Analyze the provided text for human vs. AI characteristics using these metrics, scoring each 0-100 (where higher scores indicate more human-like characteristics):
+const SYSTEM_PROMPT = `You are an expert text analyst specializing in detecting AI-generated content. Analyze text thoroughly and respond only with valid JSON.`;
 
-1. Natural Language Flow (Weight: 0.30)
-2. Context Coherence (Weight: 0.25)
-3. Stylistic Authenticity (Weight: 0.20)
-4. Structural Patterns (Weight: 0.15)
-5. Purpose Alignment (Weight: 0.10)
+const ANALYSIS_PROMPT = `As an expert text analyst, evaluate the provided text for AI vs. human authorship characteristics.
 
-Return your analysis in valid JSON format with exactly this structure:
+RETURN ONLY A VALID JSON OBJECT with the following structure and scoring criteria:
+
 {
-  "natural_language_flow": number,
-  "natural_language_flow_notes": string,
-  "context_coherence": number,
-  "context_coherence_notes": string,
-  "stylistic_authenticity": number,
-  "stylistic_authenticity_notes": string,
-  "structural_patterns": number,
-  "structural_patterns_notes": string,
-  "purpose_alignment": number,
-  "purpose_alignment_notes": string,
-  "final_analysis": string,
-  "confidence_level": number,
-  "weighted_score": number
+  "textual_characteristics": {
+    "natural_language_flow": {
+      "score": <0-100>,
+      "notes": "<string>",
+      "indicators": {
+        "sentence_variation": <0-100>,
+        "transition_naturalness": <0-100>,
+        "language_informality": <0-100>,
+        "error_patterns": <0-100>
+      }
+    },
+    "context_coherence": {
+      "score": <0-100>,
+      "notes": "<string>",
+      "indicators": {
+        "argument_development": <0-100>,
+        "example_specificity": <0-100>,
+        "logical_flow": <0-100>,
+        "topic_consistency": <0-100>
+      }
+    },
+    "stylistic_authenticity": {
+      "score": <0-100>,
+      "notes": "<string>",
+      "indicators": {
+        "voice_consistency": <0-100>,
+        "expression_variety": <0-100>,
+        "personal_elements": <0-100>,
+        "unique_insights": <0-100>
+      }
+    },
+    "structural_patterns": {
+      "score": <0-100>,
+      "notes": "<string>",
+      "indicators": {
+        "paragraph_organization": <0-100>,
+        "section_flow": <0-100>,
+        "formatting_patterns": <0-100>,
+        "reference_consistency": <0-100>
+      }
+    },
+    "purpose_alignment": {
+      "score": <0-100>,
+      "notes": "<string>",
+      "indicators": {
+        "audience_awareness": <0-100>,
+        "goal_achievement": <0-100>,
+        "tone_appropriateness": <0-100>
+      }
+    }
+  },
+  "key_evidence": {
+    "human_indicators": [
+      "<string>",
+      "<string>",
+      "<string>"
+    ],
+    "ai_indicators": [
+      "<string>",
+      "<string>",
+      "<string>"
+    ]
+  },
+  "analysis_summary": {
+    "weighted_score": <0-100>,
+    "confidence_level": <0-100>,
+    "final_classification": "<string>",
+    "primary_determination_factors": "<string>"
+  }
 }`;
 
 export default async function handler(req, res) {
@@ -38,108 +91,115 @@ export default async function handler(req, res) {
     const { text, url } = req.body;
     let contentToAnalyze = text;
 
-    // If URL is provided, scrape the content
+    // Handle URL content scraping if provided
     if (url) {
-      console.log('Received URL:', url);
+      console.log('Processing URL:', url);
       
       if (!process.env.JINA_API_KEY) {
         return res.status(400).json({ error: 'JINA_API_KEY is not configured' });
       }
 
       try {
-        console.log('Attempting to scrape with Jina AI...');
         const scrapeResponse = await fetch(`https://r.jina.ai/${url}`, {
           headers: { 'Authorization': `Bearer ${process.env.JINA_API_KEY}` }
         });
-
-        console.log('Jina AI response status:', scrapeResponse.status);
         
         if (!scrapeResponse.ok) {
-          throw new Error('Failed to scrape website');
+          throw new Error(`Failed to scrape website: ${scrapeResponse.statusText}`);
         }
 
         contentToAnalyze = await scrapeResponse.text();
-        console.log('Content retrieved, length:', contentToAnalyze.length);
+        console.log('Content retrieved successfully:', contentToAnalyze.length, 'characters');
       } catch (scrapeError) {
-        console.error('Scraping error:', scrapeError);
+        console.error('Content scraping failed:', scrapeError);
         return res.status(500).json({ 
-          error: 'Failed to scrape website content',
+          error: 'Failed to retrieve website content',
           details: scrapeError.message 
         });
       }
     }
 
-    // Validate content
+    // Validate content length
     if (!contentToAnalyze || contentToAnalyze.length < 10) {
       return res.status(400).json({ 
-        error: 'Content is required and must be at least 10 characters long' 
+        error: 'Content must be at least 10 characters long' 
       });
     }
 
-    console.log('Starting OpenAI analysis...');
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini-2024-07-18",
-      messages: [
-        {
-          role: "system",
-          content: ANALYSIS_PROMPT
-        },
-        {
-          role: "user",
-          content: contentToAnalyze
-        }
-      ],
-      temperature: 0.7
+    // Perform analysis with Anthropic
+    console.log('Initiating content analysis...');
+    const message = await anthropic.messages.create({
+      model: "claude-3-opus-20240229",
+      max_tokens: 1024,
+      system: SYSTEM_PROMPT,
+      messages: [{
+        role: "user",
+        content: `${ANALYSIS_PROMPT}\n\nAnalyze this text: ${contentToAnalyze}`
+      }]
     });
 
-    console.log('OpenAI response received');
-    const analysisText = completion.choices[0].message.content;
+    console.log('Analysis completed, processing results...');
+    const analysisText = message.content[0].text;
     
     try {
       const analysis = JSON.parse(analysisText);
       
-      // Calculate the AI score as inverse of the weighted score
-      // If weighted_score is high (more human-like), total_ai_score should be low
-      const total_ai_score = Math.max(0, Math.min(100, 100 - analysis.weighted_score));
-      
-      // Add source information and AI score to the response
-      const response = {
-        ...analysis,
-        total_ai_score,
-        source: url ? { type: 'url', value: url } : { type: 'text', value: 'Direct input' }
+      // Calculate composite scores
+      const weights = {
+        natural_language_flow: 0.20,
+        context_coherence: 0.25,
+        stylistic_authenticity: 0.20,
+        structural_patterns: 0.25,
+        purpose_alignment: 0.10
       };
 
-      // Validate the response has all required fields
-      const requiredFields = [
-        'natural_language_flow',
-        'context_coherence',
-        'stylistic_authenticity',
-        'structural_patterns',
-        'purpose_alignment',
-        'confidence_level'
-      ];
-
-      const missingFields = requiredFields.filter(field => !(field in analysis));
-      if (missingFields.length > 0) {
-        console.error('Missing fields in OpenAI response:', missingFields);
-        throw new Error(`Invalid response format. Missing fields: ${missingFields.join(', ')}`);
+      // Calculate weighted score if not provided
+      if (!analysis.analysis_summary.weighted_score) {
+        const characteristics = analysis.textual_characteristics;
+        analysis.analysis_summary.weighted_score = Object.entries(weights).reduce((total, [key, weight]) => {
+          return total + (characteristics[key].score * weight);
+        }, 0);
       }
 
+      // Determine classification based on weighted score
+      const score = analysis.analysis_summary.weighted_score;
+      if (!analysis.analysis_summary.final_classification) {
+        analysis.analysis_summary.final_classification = 
+          score < 40 ? "Highly Likely AI-Generated" :
+          score < 45 ? "Probably AI-Generated" :
+          score < 55 ? "Uncertain Authorship" :
+          score < 60 ? "Probably Human-Written" :
+          "Highly Likely Human-Written";
+      }
+
+      // Calculate inverse AI probability score
+      const ai_probability = Math.max(0, Math.min(100, 100 - score));
+
+      // Prepare final response
+      const response = {
+        ...analysis,
+        ai_probability,
+        source: url ? { type: 'url', value: url } : { type: 'text', value: 'Direct input' },
+        timestamp: new Date().toISOString()
+      };
+
       return res.status(200).json(response);
+
     } catch (parseError) {
-      console.error('Failed to parse OpenAI response:', parseError);
+      console.error('Failed to parse analysis results:', parseError);
+      console.error('Raw analysis response:', analysisText);
       return res.status(500).json({
-        error: 'Failed to parse analysis results',
+        error: 'Failed to process analysis results',
         details: parseError.message,
-        rawResponse: analysisText
+        raw_response: analysisText
       });
     }
 
   } catch (error) {
-    console.error('Error in analyze-text:', error);
+    console.error('Analysis process failed:', error);
     return res.status(500).json({ 
-      error: 'Analysis failed',
+      error: 'Content analysis failed',
       details: error.message 
     });
   }
-} 
+}
