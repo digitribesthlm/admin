@@ -26,7 +26,8 @@ Return your analysis in valid JSON format with exactly this structure:
   "purpose_alignment_notes": string,
   "final_analysis": string,
   "confidence_level": number,
-  "weighted_score": number
+  "weighted_score": number,
+  "total_ai_score": number
 }`;
 
 export default async function handler(req, res) {
