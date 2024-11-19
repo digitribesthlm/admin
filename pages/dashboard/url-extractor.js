@@ -1,5 +1,5 @@
 import { useState } from 'react';
- 
+import DashboardLayout from '@/components/DashboardLayout';
 
 export default function URLExtractor() {
   const [htmlInput, setHtmlInput] = useState('');
