@@ -121,6 +121,22 @@ export default function Dashboard() {
                 </div>
               </Link>
 
+              {/* URL Extractor */}
+              <Link href="/dashboard/url-extractor" 
+                    className="group block p-6 bg-gradient-to-br from-teal-50 to-white rounded-xl border border-teal-100 hover:shadow-md transition-all duration-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-teal-900">URL Extractor</h3>
+                  <span className="text-teal-500 group-hover:translate-x-1 transition-transform duration-200">→</span>
+                </div>
+                <p className="text-gray-600 text-sm mb-4">
+                  Extract all URLs from HTML content with one click.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <span className="px-2 py-1 bg-teal-100 text-teal-700 text-xs rounded-full">HTML</span>
+                  <span className="px-2 py-1 bg-teal-100 text-teal-700 text-xs rounded-full">URL Extraction</span>
+                </div>
+              </Link>
+
               {/* Future Tool: SEO Optimizer */}
               <div className="group block p-6 bg-gradient-to-br from-orange-50 to-white rounded-xl border border-orange-100 opacity-75">
                 <div className="flex items-center justify-between mb-4">
