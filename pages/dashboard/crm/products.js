@@ -134,7 +134,12 @@ export default function Products() {
                         >
                           View
                         </Link>
-                        <button className="btn btn-sm btn-ghost">Edit</button>
+                        <Link 
+                          href={`/dashboard/crm/products/edit/${product.id}`}
+                          className="btn btn-sm btn-ghost"
+                        >
+                          Edit
+                        </Link>
                         <button className="btn btn-sm btn-ghost text-error">Delete</button>
                       </div>
                     </td>

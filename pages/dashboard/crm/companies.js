@@ -98,7 +98,12 @@ export default function Companies() {
                         >
                           View
                         </Link>
-                        <button className="btn btn-sm btn-ghost">Edit</button>
+                        <Link 
+                          href={`/dashboard/crm/company/edit/${company.id}`}
+                          className="btn btn-sm btn-ghost"
+                        >
+                          Edit
+                        </Link>
                         <button className="btn btn-sm btn-ghost text-error">Delete</button>
                       </div>
                     </td>

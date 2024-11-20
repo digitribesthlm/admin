@@ -1,12 +1,13 @@
 import DashboardLayout from '../../../../components/DashboardLayout';
 import Breadcrumbs from '../../../../components/Breadcrumbs';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 export default function CompanyDetail() {
   const router = useRouter();
   const { id } = router.query;
 
-  // Dummy data for company details
+  // Simulated company data - in a real app, this would come from an API
   const company = {
     customer_id: "12345",
     name: "SkyTech Solutions AB",
@@ -53,15 +54,18 @@ export default function CompanyDetail() {
       <div className="space-y-6 p-4">
         <Breadcrumbs />
         
-        {/* Header */}
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">{company.name}</h1>
             <p className="text-gray-500">ID: {company.customer_id}</p>
           </div>
           <div className="flex gap-2">
-            <button className="btn btn-primary">Edit Company</button>
-            <button className="btn btn-outline">Back to List</button>
+            <Link href={`/dashboard/crm/company/edit/${id}`} className="btn btn-primary">
+              Edit Company
+            </Link>
+            <button onClick={() => router.push('/dashboard/crm/companies')} className="btn btn-outline">
+              Back to List
+            </button>
           </div>
         </div>
 
@@ -71,35 +75,37 @@ export default function CompanyDetail() {
             <div className="card-body">
               <h2 className="card-title text-xl mb-4">Basic Information</h2>
               <div className="grid grid-cols-2 gap-4">
-                <div className="form-control">
+                <div>
                   <label className="label">
                     <span className="label-text font-semibold">Company Name</span>
                   </label>
-                  <input type="text" value={company.company} className="input input-bordered" readOnly />
+                  <p className="text-gray-700">{company.company}</p>
                 </div>
-                <div className="form-control">
+                <div>
                   <label className="label">
                     <span className="label-text font-semibold">Email</span>
                   </label>
-                  <input type="text" value={company.email} className="input input-bordered" readOnly />
+                  <p className="text-gray-700">{company.email}</p>
                 </div>
-                <div className="form-control">
+                <div>
                   <label className="label">
                     <span className="label-text font-semibold">Phone</span>
                   </label>
-                  <input type="text" value={company.phone} className="input input-bordered" readOnly />
+                  <p className="text-gray-700">{company.phone}</p>
                 </div>
-                <div className="form-control">
+                <div>
                   <label className="label">
                     <span className="label-text font-semibold">Type</span>
                   </label>
-                  <input type="text" value={company.type} className="input input-bordered" readOnly />
+                  <p className="text-gray-700 uppercase">{company.type}</p>
                 </div>
-                <div className="form-control">
+                <div>
                   <label className="label">
                     <span className="label-text font-semibold">Status</span>
                   </label>
-                  <div className="badge badge-primary">{company.status}</div>
+                  <span className={`badge ${company.status === 'active' ? 'badge-success' : 'badge-warning'}`}>
+                    {company.status}
+                  </span>
                 </div>
               </div>
             </div>
@@ -110,62 +116,65 @@ export default function CompanyDetail() {
             <div className="card-body">
               <h2 className="card-title text-xl mb-4">Address Information</h2>
               <div className="grid grid-cols-2 gap-4">
-                <div className="form-control">
+                <div>
                   <label className="label">
                     <span className="label-text font-semibold">Address</span>
                   </label>
-                  <input type="text" value={company.address} className="input input-bordered" readOnly />
+                  <p className="text-gray-700">{company.address}</p>
                 </div>
-                <div className="form-control">
+                <div>
                   <label className="label">
                     <span className="label-text font-semibold">Country</span>
                   </label>
-                  <input type="text" value={company.country} className="input input-bordered" readOnly />
+                  <p className="text-gray-700">{company.country}</p>
                 </div>
-                <div className="form-control">
+                <div>
                   <label className="label">
                     <span className="label-text font-semibold">Country Code</span>
                   </label>
-                  <input type="text" value={company.country_code} className="input input-bordered" readOnly />
+                  <p className="text-gray-700">{company.country_code}</p>
                 </div>
-                <div className="form-control">
+                <div>
                   <label className="label">
                     <span className="label-text font-semibold">Homepage</span>
                   </label>
-                  <input type="text" value={company.homepage} className="input input-bordered" readOnly />
+                  <a href={company.homepage} target="_blank" rel="noopener noreferrer" 
+                     className="text-blue-600 hover:text-blue-800">
+                    {company.homepage}
+                  </a>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Tracking IDs Card */}
+          {/* Tracking Information Card */}
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
               <h2 className="card-title text-xl mb-4">Tracking Information</h2>
               <div className="grid grid-cols-2 gap-4">
-                <div className="form-control">
+                <div>
                   <label className="label">
                     <span className="label-text font-semibold">GTM ID</span>
                   </label>
-                  <input type="text" value={company.gtm_id} className="input input-bordered" readOnly />
+                  <p className="text-gray-700">{company.gtm_id}</p>
                 </div>
-                <div className="form-control">
+                <div>
                   <label className="label">
                     <span className="label-text font-semibold">GA4 ID</span>
                   </label>
-                  <input type="text" value={company.ga4_id} className="input input-bordered" readOnly />
+                  <p className="text-gray-700">{company.ga4_id}</p>
                 </div>
-                <div className="form-control">
+                <div>
                   <label className="label">
                     <span className="label-text font-semibold">Google Analytics ID</span>
                   </label>
-                  <input type="text" value={company.google_analytics_id} className="input input-bordered" readOnly />
+                  <p className="text-gray-700">{company.google_analytics_id}</p>
                 </div>
-                <div className="form-control">
+                <div>
                   <label className="label">
                     <span className="label-text font-semibold">AdWords ID</span>
                   </label>
-                  <input type="text" value={company.adwords_id || 'Not set'} className="input input-bordered" readOnly />
+                  <p className="text-gray-700">{company.adwords_id || 'Not set'}</p>
                 </div>
               </div>
             </div>
@@ -176,35 +185,35 @@ export default function CompanyDetail() {
             <div className="card-body">
               <h2 className="card-title text-xl mb-4">Social Media Information</h2>
               <div className="grid grid-cols-2 gap-4">
-                <div className="form-control">
+                <div>
                   <label className="label">
                     <span className="label-text font-semibold">FB Ads Account ID</span>
                   </label>
-                  <input type="text" value={company.fb_ads_account_id} className="input input-bordered" readOnly />
+                  <p className="text-gray-700">{company.fb_ads_account_id}</p>
                 </div>
-                <div className="form-control">
+                <div>
                   <label className="label">
                     <span className="label-text font-semibold">FB Pixel</span>
                   </label>
-                  <input type="text" value={company.fb_pixel} className="input input-bordered" readOnly />
+                  <p className="text-gray-700">{company.fb_pixel}</p>
                 </div>
-                <div className="form-control">
+                <div>
                   <label className="label">
                     <span className="label-text font-semibold">LinkedIn Ads Account</span>
                   </label>
-                  <input type="text" value={company.linkedin_ads_account_id} className="input input-bordered" readOnly />
+                  <p className="text-gray-700">{company.linkedin_ads_account_id}</p>
                 </div>
-                <div className="form-control">
+                <div>
                   <label className="label">
                     <span className="label-text font-semibold">LinkedIn Insight</span>
                   </label>
-                  <input type="text" value={company.linkedin_insight_id} className="input input-bordered" readOnly />
+                  <p className="text-gray-700">{company.linkedin_insight_id}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Cron Settings Card */}
+          {/* Integration Status Card */}
           <div className="card bg-base-100 shadow-xl col-span-2">
             <div className="card-body">
               <h2 className="card-title text-xl mb-4">Integration Status</h2>
@@ -233,11 +242,7 @@ export default function CompanyDetail() {
           <div className="card bg-base-100 shadow-xl col-span-2">
             <div className="card-body">
               <h2 className="card-title text-xl mb-4">OKR</h2>
-              <textarea 
-                className="textarea textarea-bordered w-full" 
-                value={company.okr || 'No OKR set'}
-                readOnly
-              />
+              <p className="text-gray-700">{company.okr || 'No OKR set'}</p>
             </div>
           </div>
         </div>

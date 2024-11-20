@@ -106,7 +106,12 @@ export default function People() {
                         >
                           View
                         </Link>
-                        <button className="btn btn-sm btn-ghost">Edit</button>
+                        <Link 
+                          href={`/dashboard/crm/people/edit/${person.id}`}
+                          className="btn btn-sm btn-ghost"
+                        >
+                          Edit
+                        </Link>
                         <button className="btn btn-sm btn-ghost text-error">Delete</button>
                       </div>
                     </td>
