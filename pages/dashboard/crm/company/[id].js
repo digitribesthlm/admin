@@ -2,52 +2,71 @@ import DashboardLayout from '../../../../components/DashboardLayout';
 import Breadcrumbs from '../../../../components/Breadcrumbs';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
 export default function CompanyDetail() {
   const router = useRouter();
   const { id } = router.query;
+  const [company, setCompany] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Simulated company data - in a real app, this would come from an API
-  const company = {
-    customer_id: "12345",
-    name: "SkyTech Solutions AB",
-    company: "SkyTech Solutions AB",
-    email: "contact@skytech.se",
-    gmail: "skytech.marketing@gmail.com",
-    phone: "+46 70 123 4567",
-    address: "Innovation Street 42",
-    country: "Sweden",
-    country_code: "SE",
-    homepage: "https://www.skytech.se",
-    type: "b2b",
-    status: "active",
-    invoice_mail: "invoices.123456@arkivplats.se",
+  useEffect(() => {
+    if (id) {
+      fetchCompanyData();
+    }
+  }, [id]);
 
-    // Tracking IDs
-    gtm_id: "GTM-NKTR789",
-    ga4_id: "G-ABC123DEF4",
-    google_analytics_id: "UA-12345678-9",
-    adwords_id: "AW-987654321",
-
-    // Social Media IDs
-    fb_ads_account_id: "251234567890",
-    fb_account_id: "987654321",
-    fb_page_id: "123456789",
-    fb_pixel: "987654321098765",
-    linkedin_ads_account_id: "12345678",
-    linkedin_insight_id: "987654",
-
-    // Cron Settings
-    cron_work: "active",
-    cron_work_facebook: "active",
-    cron_work_adwords: "pause",
-    cron_work_seo: "active",
-    cron_work_twitter: "pause",
-    cron_work_linkedin: "active",
-    cron_work_bing: "pause",
-
-    okr: "Q1 2024: Increase market presence by 25%"
+  const fetchCompanyData = async () => {
+    try {
+      const response = await fetch('/api/crm-table');
+      const data = await response.json();
+      
+      if (data.success) {
+        const foundCompany = data.tableData.find(record => record.id === id);
+        if (foundCompany) {
+          setCompany(foundCompany);
+        } else {
+          alert('Company not found');
+          router.push('/dashboard/crm/companies');
+        }
+      } else {
+        alert('Failed to fetch company data');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error loading company data');
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="loading loading-spinner loading-lg"></div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (!company) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4">Company Not Found</h2>
+            <button 
+              onClick={() => router.push('/dashboard/crm/companies')} 
+              className="btn btn-primary"
+            >
+              Back to Companies
+            </button>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -56,7 +75,7 @@ export default function CompanyDetail() {
         
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{company.name}</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{company.name || company.company}</h1>
             <p className="text-gray-500">ID: {company.customer_id}</p>
           </div>
           <div className="flex gap-2">
@@ -79,32 +98,32 @@ export default function CompanyDetail() {
                   <label className="label">
                     <span className="label-text font-semibold">Company Name</span>
                   </label>
-                  <p className="text-gray-700">{company.company}</p>
+                  <p className="text-gray-700">{company.company || '-'}</p>
                 </div>
                 <div>
                   <label className="label">
                     <span className="label-text font-semibold">Email</span>
                   </label>
-                  <p className="text-gray-700">{company.email}</p>
+                  <p className="text-gray-700">{company.email || '-'}</p>
                 </div>
                 <div>
                   <label className="label">
                     <span className="label-text font-semibold">Phone</span>
                   </label>
-                  <p className="text-gray-700">{company.phone}</p>
+                  <p className="text-gray-700">{company.phone || '-'}</p>
                 </div>
                 <div>
                   <label className="label">
                     <span className="label-text font-semibold">Type</span>
                   </label>
-                  <p className="text-gray-700 uppercase">{company.type}</p>
+                  <p className="text-gray-700 uppercase">{company.type || '-'}</p>
                 </div>
                 <div>
                   <label className="label">
                     <span className="label-text font-semibold">Status</span>
                   </label>
                   <span className={`badge ${company.status === 'active' ? 'badge-success' : 'badge-warning'}`}>
-                    {company.status}
+                    {company.status || 'Not set'}
                   </span>
                 </div>
               </div>
@@ -120,28 +139,32 @@ export default function CompanyDetail() {
                   <label className="label">
                     <span className="label-text font-semibold">Address</span>
                   </label>
-                  <p className="text-gray-700">{company.address}</p>
+                  <p className="text-gray-700">{company.address || '-'}</p>
                 </div>
                 <div>
                   <label className="label">
                     <span className="label-text font-semibold">Country</span>
                   </label>
-                  <p className="text-gray-700">{company.country}</p>
+                  <p className="text-gray-700">{company.country || '-'}</p>
                 </div>
                 <div>
                   <label className="label">
                     <span className="label-text font-semibold">Country Code</span>
                   </label>
-                  <p className="text-gray-700">{company.country_code}</p>
+                  <p className="text-gray-700">{company.country_code || '-'}</p>
                 </div>
                 <div>
                   <label className="label">
                     <span className="label-text font-semibold">Homepage</span>
                   </label>
-                  <a href={company.homepage} target="_blank" rel="noopener noreferrer" 
-                     className="text-blue-600 hover:text-blue-800">
-                    {company.homepage}
-                  </a>
+                  {company.homepage ? (
+                    <a href={company.homepage} target="_blank" rel="noopener noreferrer" 
+                       className="text-blue-600 hover:text-blue-800">
+                      {company.homepage}
+                    </a>
+                  ) : (
+                    <p className="text-gray-700">-</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -156,25 +179,25 @@ export default function CompanyDetail() {
                   <label className="label">
                     <span className="label-text font-semibold">GTM ID</span>
                   </label>
-                  <p className="text-gray-700">{company.gtm_id}</p>
+                  <p className="text-gray-700">{company.gtm_id || '-'}</p>
                 </div>
                 <div>
                   <label className="label">
                     <span className="label-text font-semibold">GA4 ID</span>
                   </label>
-                  <p className="text-gray-700">{company.ga4_id}</p>
+                  <p className="text-gray-700">{company.ga4_id || '-'}</p>
                 </div>
                 <div>
                   <label className="label">
                     <span className="label-text font-semibold">Google Analytics ID</span>
                   </label>
-                  <p className="text-gray-700">{company.google_analytics_id}</p>
+                  <p className="text-gray-700">{company.google_analytics_id || '-'}</p>
                 </div>
                 <div>
                   <label className="label">
                     <span className="label-text font-semibold">AdWords ID</span>
                   </label>
-                  <p className="text-gray-700">{company.adwords_id || 'Not set'}</p>
+                  <p className="text-gray-700">{company.adwords_id || '-'}</p>
                 </div>
               </div>
             </div>
@@ -189,25 +212,25 @@ export default function CompanyDetail() {
                   <label className="label">
                     <span className="label-text font-semibold">FB Ads Account ID</span>
                   </label>
-                  <p className="text-gray-700">{company.fb_ads_account_id}</p>
+                  <p className="text-gray-700">{company.fb_ads_account_id || '-'}</p>
                 </div>
                 <div>
                   <label className="label">
                     <span className="label-text font-semibold">FB Pixel</span>
                   </label>
-                  <p className="text-gray-700">{company.fb_pixel}</p>
+                  <p className="text-gray-700">{company.fb_pixel || '-'}</p>
                 </div>
                 <div>
                   <label className="label">
                     <span className="label-text font-semibold">LinkedIn Ads Account</span>
                   </label>
-                  <p className="text-gray-700">{company.linkedin_ads_account_id}</p>
+                  <p className="text-gray-700">{company.linkedin_ads_account_id || '-'}</p>
                 </div>
                 <div>
                   <label className="label">
                     <span className="label-text font-semibold">LinkedIn Insight</span>
                   </label>
-                  <p className="text-gray-700">{company.linkedin_insight_id}</p>
+                  <p className="text-gray-700">{company.linkedin_insight_id || '-'}</p>
                 </div>
               </div>
             </div>
@@ -242,7 +265,7 @@ export default function CompanyDetail() {
           <div className="card bg-base-100 shadow-xl col-span-2">
             <div className="card-body">
               <h2 className="card-title text-xl mb-4">OKR</h2>
-              <p className="text-gray-700">{company.okr || 'No OKR set'}</p>
+              <p className="text-gray-700">{company.OKR || 'No OKR set'}</p>
             </div>
           </div>
         </div>

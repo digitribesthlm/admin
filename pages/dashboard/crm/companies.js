@@ -1,46 +1,77 @@
+import { useState, useEffect } from 'react';
 import DashboardLayout from '../../../components/DashboardLayout';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import Link from 'next/link';
 
 export default function Companies() {
-  const companies = [
-    { 
-      id: 1, 
-      name: 'Acme Corp', 
-      industry: 'Technology', 
-      employees: 150, 
-      status: 'Active',
-      email: 'contact@acmecorp.com',
-      type: 'b2b'
-    },
-    { 
-      id: 2, 
-      name: 'Global Industries', 
-      industry: 'Manufacturing', 
-      employees: 500, 
-      status: 'Active',
-      email: 'info@globalind.com',
-      type: 'b2b'
-    },
-    { 
-      id: 3, 
-      name: 'Tech Solutions', 
-      industry: 'Software', 
-      employees: 75, 
-      status: 'Pending',
-      email: 'hello@techsolutions.com',
-      type: 'b2c'
-    },
-    { 
-      id: 4, 
-      name: 'Green Energy Co', 
-      industry: 'Energy', 
-      employees: 200, 
-      status: 'Active',
-      email: 'contact@greenenergy.com',
-      type: 'b2b'
-    },
-  ];
+  const [tableData, setTableData] = useState([]);
+  const [editingRecord, setEditingRecord] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [newRecord, setNewRecord] = useState({
+    customer_id: '',
+    name: '',
+    company: '',
+    email: '',
+    type: '',
+    status: ''
+  });
+
+  useEffect(() => {
+    handleFetch();
+  }, []);
+
+  const handleFetch = async () => {
+    try {
+      const response = await fetch('/api/crm-table');
+      const data = await response.json();
+      
+      if (data.success) {
+        setTableData(data.tableData);
+      } else {
+        alert('Failed to fetch records');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error fetching records');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (confirm('Are you sure you want to delete this company?')) {
+      try {
+        const response = await fetch('/api/crm-table', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id }),
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+          setTableData(data.tableData);
+          alert('Company deleted successfully!');
+        } else {
+          alert('Failed to delete company');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error deleting company');
+      }
+    }
+  };
+
+  const getStatusBadgeClass = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'active':
+        return 'badge-success';
+      case 'pause':
+        return 'badge-warning';
+      default:
+        return 'badge-ghost';
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -59,35 +90,35 @@ export default function Companies() {
               <thead>
                 <tr>
                   <th>Company Name</th>
-                  <th>Industry</th>
+                  <th>Customer ID</th>
                   <th>Type</th>
-                  <th>Employees</th>
+                  <th>Email</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {companies.map((company) => (
+                {tableData.map((company) => (
                   <tr key={company.id} className="hover">
                     <td>
                       <Link 
                         href={`/dashboard/crm/company/${company.id}`}
                         className="font-medium text-blue-600 hover:text-blue-800"
                       >
-                        {company.name}
+                        {company.company || company.name || '-'}
                       </Link>
-                      <div className="text-sm text-gray-500">{company.email}</div>
+                      <div className="text-sm text-gray-500">{company.homepage || '-'}</div>
                     </td>
-                    <td>{company.industry}</td>
+                    <td>{company.customer_id || '-'}</td>
                     <td>
-                      <span className="badge badge-ghost">{company.type.toUpperCase()}</span>
+                      <span className="badge badge-ghost">
+                        {(company.type || '-').toUpperCase()}
+                      </span>
                     </td>
-                    <td>{company.employees}</td>
+                    <td>{company.email || '-'}</td>
                     <td>
-                      <span className={`badge ${
-                        company.status === 'Active' ? 'badge-success' : 'badge-warning'
-                      }`}>
-                        {company.status}
+                      <span className={`badge ${getStatusBadgeClass(company.status)}`}>
+                        {company.status || 'Unknown'}
                       </span>
                     </td>
                     <td>
@@ -104,7 +135,12 @@ export default function Companies() {
                         >
                           Edit
                         </Link>
-                        <button className="btn btn-sm btn-ghost text-error">Delete</button>
+                        <button 
+                          onClick={() => handleDelete(company.id)}
+                          className="btn btn-sm btn-ghost text-error"
+                        >
+                          Delete
+                        </button>
                       </div>
                     </td>
                   </tr>

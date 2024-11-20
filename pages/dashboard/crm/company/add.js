@@ -42,15 +42,34 @@ export default function AddCompany() {
     cron_work_linkedin: 'active',
     cron_work_bing: 'active',
     
-    okr: ''
+    OKR: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log(formData);
-    // Redirect back to companies list
-    router.push('/dashboard/crm/companies');
+    try {
+      const response = await fetch('/api/crm-table', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fields: formData
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        alert('Company created successfully!');
+        router.push('/dashboard/crm/companies');
+      } else {
+        alert('Failed to create company');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error creating company');
+    }
   };
 
   const handleChange = (e) => {
@@ -128,6 +147,34 @@ export default function AddCompany() {
                     onChange={handleChange}
                     className="input input-bordered"
                   />
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Type</span>
+                  </label>
+                  <select
+                    name="type"
+                    value={formData.type}
+                    onChange={handleChange}
+                    className="select select-bordered"
+                  >
+                    <option value="b2b">B2B</option>
+                    <option value="b2c">B2C</option>
+                  </select>
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Status</span>
+                  </label>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    className="select select-bordered"
+                  >
+                    <option value="active">Active</option>
+                    <option value="pause">Pause</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -367,8 +414,8 @@ export default function AddCompany() {
               <h2 className="card-title text-xl">OKR</h2>
               <div className="form-control">
                 <textarea
-                  name="okr"
-                  value={formData.okr}
+                  name="OKR"
+                  value={formData.OKR}
                   onChange={handleChange}
                   className="textarea textarea-bordered h-24"
                   placeholder="Enter company OKR..."

@@ -6,56 +6,126 @@ import { useRouter } from 'next/router';
 export default function EditCompany() {
   const router = useRouter();
   const { id } = router.query;
+  const [isLoading, setIsLoading] = useState(true);
+  const [formData, setFormData] = useState({
+    name: '',
+    company: '',
+    email: '',
+    gmail: '',
+    phone: '',
+    address: '',
+    country: '',
+    country_code: '',
+    homepage: '',
+    type: '',
+    status: '',
+    invoice_mail: '',
+    gtm_id: '',
+    ga4_id: '',
+    google_analytics_id: '',
+    adwords_id: '',
+    fb_ads_account_id: '',
+    fb_account_id: '',
+    fb_page_id: '',
+    fb_pixel: '',
+    linkedin_ads_account_id: '',
+    linkedin_insight_id: '',
+    cron_work: '',
+    cron_work_facebook: '',
+    cron_work_adwords: '',
+    cron_work_seo: '',
+    cron_work_twitter: '',
+    cron_work_linkedin: '',
+    cron_work_bing: '',
+    OKR: ''
+  });
 
-  // Simulated company data - in a real app, this would come from an API
-  const companyData = {
-    customer_id: "12345",
-    name: "SkyTech Solutions AB",
-    company: "SkyTech Solutions AB",
-    email: "contact@skytech.se",
-    gmail: "skytech.marketing@gmail.com",
-    phone: "+46 70 123 4567",
-    address: "Innovation Street 42",
-    country: "Sweden",
-    country_code: "SE",
-    homepage: "https://www.skytech.se",
-    type: "b2b",
-    status: "active",
-    invoice_mail: "invoices.123456@arkivplats.se",
+  useEffect(() => {
+    if (id) {
+      fetchCompanyData();
+    }
+  }, [id]);
 
-    // Tracking IDs
-    gtm_id: "GTM-NKTR789",
-    ga4_id: "G-ABC123DEF4",
-    google_analytics_id: "UA-12345678-9",
-    adwords_id: "AW-987654321",
-
-    // Social Media IDs
-    fb_ads_account_id: "251234567890",
-    fb_account_id: "987654321",
-    fb_page_id: "123456789",
-    fb_pixel: "987654321098765",
-    linkedin_ads_account_id: "12345678",
-    linkedin_insight_id: "987654",
-
-    // Cron Settings
-    cron_work: "active",
-    cron_work_facebook: "active",
-    cron_work_adwords: "pause",
-    cron_work_seo: "active",
-    cron_work_twitter: "pause",
-    cron_work_linkedin: "active",
-    cron_work_bing: "pause",
-
-    okr: "Q1 2024: Increase market presence by 25%"
+  const fetchCompanyData = async () => {
+    try {
+      const response = await fetch('/api/crm-table');
+      const data = await response.json();
+      
+      if (data.success) {
+        const company = data.tableData.find(record => record.id === id);
+        if (company) {
+          setFormData({
+            customer_id: company.customer_id || '',
+            name: company.name || '',
+            company: company.company || '',
+            email: company.email || '',
+            gmail: company.gmail || '',
+            phone: company.phone || '',
+            address: company.address || '',
+            country: company.country || '',
+            country_code: company.country_code || '',
+            homepage: company.homepage || '',
+            type: company.type || '',
+            status: company.status || '',
+            invoice_mail: company.invoice_mail || '',
+            gtm_id: company.gtm_id || '',
+            ga4_id: company.ga4_id || '',
+            google_analytics_id: company.google_analytics_id || '',
+            adwords_id: company.adwords_id || '',
+            fb_ads_account_id: company.fb_ads_account_id || '',
+            fb_account_id: company.fb_account_id || '',
+            fb_page_id: company.fb_page_id || '',
+            fb_pixel: company.fb_pixel || '',
+            linkedin_ads_account_id: company.linkedin_ads_account_id || '',
+            linkedin_insight_id: company.linkedin_insight_id || '',
+            cron_work: company.cron_work || '',
+            cron_work_facebook: company.cron_work_facebook || '',
+            cron_work_adwords: company.cron_work_adwords || '',
+            cron_work_seo: company.cron_work_seo || '',
+            cron_work_twitter: company.cron_work_twitter || '',
+            cron_work_linkedin: company.cron_work_linkedin || '',
+            cron_work_bing: company.cron_work_bing || '',
+            OKR: company.OKR || ''
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error loading company data');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const [formData, setFormData] = useState(companyData);
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Updated company data:', formData);
-    // In a real app, you would save the changes here
-    router.push(`/dashboard/crm/company/${id}`);
+    try {
+      // Create a copy of formData without customer_id
+      const { customer_id, ...updateData } = formData;
+      
+      const response = await fetch('/api/crm-table', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id,
+          fields: updateData
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        alert('Company updated successfully!');
+        router.push('/dashboard/crm/companies');
+      } else {
+        alert('Failed to update company');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error updating company');
+    }
   };
 
   const handleChange = (e) => {
@@ -65,6 +135,16 @@ export default function EditCompany() {
       [name]: value
     }));
   };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="loading loading-spinner loading-lg"></div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -84,6 +164,19 @@ export default function EditCompany() {
             <div className="card-body">
               <h2 className="card-title text-xl">Basic Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {formData.customer_id && (
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text">Customer ID</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.customer_id}
+                      className="input input-bordered"
+                      disabled
+                    />
+                  </div>
+                )}
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Company Name*</span>
@@ -133,6 +226,34 @@ export default function EditCompany() {
                     onChange={handleChange}
                     className="input input-bordered"
                   />
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Type</span>
+                  </label>
+                  <select
+                    name="type"
+                    value={formData.type}
+                    onChange={handleChange}
+                    className="select select-bordered"
+                  >
+                    <option value="b2b">B2B</option>
+                    <option value="b2c">B2C</option>
+                  </select>
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Status</span>
+                  </label>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    className="select select-bordered"
+                  >
+                    <option value="active">Active</option>
+                    <option value="pause">Pause</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -357,6 +478,7 @@ export default function EditCompany() {
                       onChange={handleChange}
                       className="select select-bordered"
                     >
+                      <option value="">Select Status</option>
                       <option value="active">Active</option>
                       <option value="pause">Pause</option>
                     </select>
@@ -372,8 +494,8 @@ export default function EditCompany() {
               <h2 className="card-title text-xl">OKR</h2>
               <div className="form-control">
                 <textarea
-                  name="okr"
-                  value={formData.okr}
+                  name="OKR"
+                  value={formData.OKR}
                   onChange={handleChange}
                   className="textarea textarea-bordered h-24"
                   placeholder="Enter company OKR..."
