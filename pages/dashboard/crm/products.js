@@ -1,107 +1,148 @@
 import DashboardLayout from '../../../components/DashboardLayout';
 import Breadcrumbs from '../../../components/Breadcrumbs';
+import Link from 'next/link';
 
 export default function Products() {
   const products = [
     { 
       id: 1, 
-      name: 'Enterprise Suite', 
-      category: 'Software',
-      price: '$999/mo',
+      name: 'SEO Premium Package', 
+      category: 'SEO',
+      price: '2999',
+      billing_cycle: 'Monthly',
+      service_level: 'Premium',
       status: 'Active',
-      sales: 45
+      platforms: ['Technical SEO', 'Content SEO', 'Local SEO']
     },
     { 
       id: 2, 
-      name: 'Business Analytics', 
-      category: 'Service',
-      price: '$499/mo',
+      name: 'Google Ads Management', 
+      category: 'PPC',
+      price: '1999',
+      billing_cycle: 'Monthly',
+      service_level: 'Standard',
       status: 'Active',
-      sales: 78
+      platforms: ['Search', 'Display', 'Shopping']
     },
     { 
       id: 3, 
-      name: 'Cloud Storage', 
-      category: 'Infrastructure',
-      price: '$199/mo',
+      name: 'Social Media Complete', 
+      category: 'Social',
+      price: '3999',
+      billing_cycle: 'Monthly',
+      service_level: 'Premium',
       status: 'Active',
-      sales: 156
+      platforms: ['Facebook', 'LinkedIn', 'Twitter']
     },
     { 
       id: 4, 
-      name: 'Security Package', 
-      category: 'Software',
-      price: '$299/mo',
-      status: 'Beta',
-      sales: 23
+      name: 'Analytics & Tracking Setup', 
+      category: 'Analytics',
+      price: '999',
+      billing_cycle: 'One-time',
+      service_level: 'Standard',
+      status: 'Active',
+      platforms: ['Google Analytics', 'Tag Manager', 'Pixel Setup']
+    },
+    { 
+      id: 5, 
+      name: 'Digital Marketing Bundle', 
+      category: 'Integrated',
+      price: '5999',
+      billing_cycle: 'Monthly',
+      service_level: 'Premium',
+      status: 'Active',
+      platforms: ['SEO', 'PPC', 'Social', 'Analytics']
     }
   ];
+
+  const getCategoryBadgeColor = (category) => {
+    const colors = {
+      'SEO': 'badge-primary',
+      'PPC': 'badge-secondary',
+      'Social': 'badge-accent',
+      'Analytics': 'badge-info',
+      'Integrated': 'badge-success'
+    };
+    return colors[category] || 'badge-ghost';
+  };
 
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <Breadcrumbs />
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-gray-900">Products</h1>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+          <h1 className="text-2xl font-semibold text-gray-900">Products & Services</h1>
+          <Link href="/dashboard/crm/products/add" className="btn btn-primary">
             Add Product
-          </button>
+          </Link>
         </div>
 
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Product Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Category
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Price
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Sales
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {products.map((product) => (
-                <tr key={product.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{product.name}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">{product.category}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">{product.price}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      product.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {product.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">{product.sales} units</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <button className="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                    <button className="text-red-600 hover:text-red-900">Delete</button>
-                  </td>
+        <div className="card bg-base-100 shadow-xl">
+          <div className="overflow-x-auto">
+            <table className="table table-zebra w-full">
+              <thead>
+                <tr>
+                  <th>Product/Service</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Service Level</th>
+                  <th>Billing</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {products.map((product) => (
+                  <tr key={product.id} className="hover">
+                    <td>
+                      <Link 
+                        href={`/dashboard/crm/products/${product.id}`}
+                        className="font-medium text-blue-600 hover:text-blue-800"
+                      >
+                        {product.name}
+                      </Link>
+                      <div className="text-sm text-gray-500">
+                        {product.platforms.join(' • ')}
+                      </div>
+                    </td>
+                    <td>
+                      <span className={`badge ${getCategoryBadgeColor(product.category)}`}>
+                        {product.category}
+                      </span>
+                    </td>
+                    <td>
+                      ${product.price}
+                      <div className="text-sm text-gray-500">{product.billing_cycle}</div>
+                    </td>
+                    <td>
+                      <span className="badge badge-ghost">{product.service_level}</span>
+                    </td>
+                    <td>{product.billing_cycle}</td>
+                    <td>
+                      <span className={`badge ${
+                        product.status === 'Active' ? 'badge-success' : 'badge-warning'
+                      }`}>
+                        {product.status}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="flex space-x-2">
+                        <Link 
+                          href={`/dashboard/crm/products/${product.id}`}
+                          className="btn btn-sm btn-ghost"
+                        >
+                          View
+                        </Link>
+                        <button className="btn btn-sm btn-ghost">Edit</button>
+                        <button className="btn btn-sm btn-ghost text-error">Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </DashboardLayout>

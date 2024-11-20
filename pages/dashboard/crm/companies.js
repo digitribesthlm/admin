@@ -48,9 +48,9 @@ export default function Companies() {
         <Breadcrumbs />
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-semibold text-gray-900">Companies</h1>
-          <button className="btn btn-primary">
+          <Link href="/dashboard/crm/company/add" className="btn btn-primary">
             Add Company
-          </button>
+          </Link>
         </div>
 
         <div className="card bg-base-100 shadow-xl">
