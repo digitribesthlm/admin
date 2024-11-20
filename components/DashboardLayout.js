@@ -57,6 +57,9 @@ export default function DashboardLayout({ children }) {
                 <a href="/dashboard/analytics" className={`text-gray-600 hover:text-gray-900 ${router.pathname === '/dashboard/analytics' ? 'text-blue-600 font-medium' : ''}`}>
                   Analytics
                 </a>
+                <a href="/dashboard/crm" className={`text-gray-600 hover:text-gray-900 ${router.pathname === '/dashboard/crm' ? 'text-blue-600 font-medium' : ''}`}>
+                  CRM
+                </a>
               </div>
             </div>
 
@@ -108,4 +111,4 @@ export default function DashboardLayout({ children }) {
       <Footer />
     </div>
   );
-} 
+}
