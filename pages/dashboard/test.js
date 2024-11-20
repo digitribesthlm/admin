@@ -54,7 +54,7 @@ export default function TestPage() {
     const avgImpact = filteredRecords.reduce((sum, r) => {
       const effect = parseFloat(r['Relative Effect']?.replace('%', '') || '0');
       return sum + effect;
-    }, 0) / totalTests;
+    }, 0) / (totalTests || 1);
 
     return {
       totalTests,
