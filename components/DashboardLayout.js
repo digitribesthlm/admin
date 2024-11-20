@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Footer from './Footer';
+import Link from 'next/link';
 
 export default function DashboardLayout({ children }) {
   const router = useRouter();
@@ -54,6 +55,10 @@ export default function DashboardLayout({ children }) {
                 <a href="/dashboard/crm" className={`text-gray-600 hover:text-gray-900 ${router.pathname.startsWith('/dashboard/crm') ? 'text-blue-600 font-medium' : ''}`}>
                   CRM
                 </a>
+                {/* New TEST link */}
+                <Link href="/dashboard/test" className="text-gray-600 hover:text-gray-900">
+                  TEST
+                </Link>
               </div>
             </div>
 
