@@ -41,6 +41,18 @@ export default function Dashboard() {
           <div className="bg-white rounded-xl shadow-sm p-6">
             <h2 className="text-xl font-semibold mb-6">AI Marketing Tools</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Note Taking */}
+              <Link href="/dashboard/meeting-notes" 
+                    className="group block p-6 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-blue-100 hover:shadow-md transition-all duration-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-blue-900">Note Taking During Meetings</h3>
+                  <span className="text-blue-500 group-hover:translate-x-1 transition-transform duration-200">→</span>
+                </div>
+                <p className="text-gray-600 text-sm mb-4">
+                  Capture your thoughts and important points discussed during meetings here.
+                </p>
+              </Link>
+
               {/* Text Analyzer */}
               <Link href="/dashboard/text-analyzer" 
                     className="group block p-6 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-blue-100 hover:shadow-md transition-all duration-200">

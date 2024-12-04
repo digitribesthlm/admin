@@ -1,3 +1,4 @@
+// components/DashboardLayout.js
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Footer from './Footer';
