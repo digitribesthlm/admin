@@ -50,12 +50,18 @@ export default function DashboardLayout({ children }) {
                 {process.env.NEXT_PUBLIC_BRAND_NAME}
               </div>
               <div className="hidden md:flex space-x-8">
-                <a href="/dashboard" className={`text-gray-600 hover:text-gray-900 ${router.pathname === '/dashboard' ? 'text-blue-600 font-medium' : ''}`}>
+                <Link 
+                  href="/dashboard" 
+                  className={`text-gray-600 hover:text-gray-900 ${router.pathname === '/dashboard' ? 'text-blue-600 font-medium' : ''}`}
+                >
                   Dashboard
-                </a>
-                <a href="/dashboard/crm" className={`text-gray-600 hover:text-gray-900 ${router.pathname.startsWith('/dashboard/crm') ? 'text-blue-600 font-medium' : ''}`}>
+                </Link>
+                <Link 
+                  href="/dashboard/crm" 
+                  className={`text-gray-600 hover:text-gray-900 ${router.pathname.startsWith('/dashboard/crm') ? 'text-blue-600 font-medium' : ''}`}
+                >
                   CRM
-                </a>
+                </Link>
                 <Link href="/dashboard/test" className="text-gray-600 hover:text-gray-900">
                   TEST
                 </Link>
