@@ -12,9 +12,11 @@ function AddOpportunity() {
     notes: '',
     nextFollowUp: ''
   })
+  const [message, setMessage] = useState({ type: '', text: '' })
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage({ type: '', text: '' });
     try {
       const response = await fetch('/api/opportunities', {
         method: 'POST',
@@ -51,10 +53,10 @@ function AddOpportunity() {
         nextFollowUp: ''
       });
       
-      alert('Opportunity added successfully!');
+      setMessage({ type: 'success', text: 'Opportunity added successfully!' });
     } catch (error) {
       console.error('Error adding opportunity:', error);
-      alert('Error adding opportunity. Please try again.');
+      setMessage({ type: 'error', text: 'Failed to add opportunity. Please try again.' });
     }
   }
 
@@ -70,6 +72,14 @@ function AddOpportunity() {
       <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Add New Opportunity</h1>
         
+        {message.text && (
+          <div className={`mb-4 p-4 rounded-md ${
+            message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+          }`}>
+            {message.text}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -191,4 +201,4 @@ function AddOpportunity() {
   )
 }
 
-export default AddOpportunity 
+export default AddOpportunity
