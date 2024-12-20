@@ -62,5 +62,36 @@ export default async function handler(req, res) {
       });
     }
   } 
-  // ... rest of the existing code remains the same
+  else if (req.method === 'POST') {
+    try {
+      const base = new Airtable({
+        apiKey: process.env.AIRTABLE_SECRET_TOKEN
+      }).base(process.env.AIRTABLE_BASE_ID_SALES);
+
+      const table = base(process.env.AIRTABLE_TABLE_ID_SALES);
+      
+      const record = await table.create([
+        {
+          fields: req.body.fields
+        }
+      ]);
+
+      res.status(200).json({ 
+        success: true, 
+        record: {
+          id: record[0].id,
+          ...record[0].fields
+        }
+      });
+    } catch (error) {
+      console.error('Error creating record:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Failed to create record'
+      });
+    }
+  }
+  else {
+    res.status(405).json({ success: false, message: 'Method not allowed' });
+  }
 }

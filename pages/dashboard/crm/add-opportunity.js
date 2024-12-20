@@ -14,9 +14,48 @@ function AddOpportunity() {
   })
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    // TODO: Add your API endpoint to save the opportunity
-    console.log('Form submitted:', formData)
+    e.preventDefault();
+    try {
+      const response = await fetch('/api/opportunities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fields: {
+            companyName: formData.companyName,
+            contactPerson: formData.contactPerson,
+            email: formData.email,
+            phone: formData.phone,
+            potentialValue: parseFloat(formData.potentialValue),
+            status: formData.status,
+            notes: formData.notes,
+            nextFollowUp: formData.nextFollowUp
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add opportunity');
+      }
+
+      // Reset form after successful submission
+      setFormData({
+        companyName: '',
+        contactPerson: '',
+        email: '',
+        phone: '',
+        potentialValue: '',
+        status: 'prospecting',
+        notes: '',
+        nextFollowUp: ''
+      });
+      
+      alert('Opportunity added successfully!');
+    } catch (error) {
+      console.error('Error adding opportunity:', error);
+      alert('Error adding opportunity. Please try again.');
+    }
   }
 
   const handleChange = (e) => {
