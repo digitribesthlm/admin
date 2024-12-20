@@ -5,6 +5,24 @@ import Link from 'next/link';
 export default function CRM() {
   return (
     <DashboardLayout>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-800">CRM Overview</h1>
+        <Link 
+          href="/dashboard/crm/add-opportunity" 
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+        >
+          <svg 
+            className="w-5 h-5 mr-2" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Add Opportunity
+        </Link>
+      </div>
+
       <div className="space-y-6">
         <Breadcrumbs />
         <h1 className="text-2xl font-semibold text-gray-900">CRM Overview</h1>
@@ -81,6 +99,21 @@ export default function CRM() {
               <p className="mt-2 text-sm text-gray-600">18 due today</p>
             </div>
           </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {/* New sales-related cards */}
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold text-blue-600">Opportunities</h2>
+            <div className="text-3xl font-bold">18</div>
+            <div className="text-sm text-gray-600">+3 this month</div>
+          </div>
+          
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold text-blue-600">Pipeline Value</h2>
+            <div className="text-3xl font-bold">$142K</div>
+            <div className="text-sm text-gray-600">+12% this month</div>
+          </div>
         </div>
       </div>
     </DashboardLayout>

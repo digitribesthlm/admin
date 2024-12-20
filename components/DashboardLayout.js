@@ -56,9 +56,11 @@ export default function DashboardLayout({ children }) {
                 <a href="/dashboard/crm" className={`text-gray-600 hover:text-gray-900 ${router.pathname.startsWith('/dashboard/crm') ? 'text-blue-600 font-medium' : ''}`}>
                   CRM
                 </a>
-                {/* New TEST link */}
                 <Link href="/dashboard/test" className="text-gray-600 hover:text-gray-900">
                   TEST
+                </Link>
+                <Link href="/dashboard/sales" className="text-gray-600 hover:text-gray-900">
+                  Sales
                 </Link>
               </div>
             </div>
@@ -104,7 +106,26 @@ export default function DashboardLayout({ children }) {
 
       <main className="flex-grow bg-gray-50">
         <div className="container mx-auto px-8 py-8">
-          {children}
+          <div className="drawer-content flex flex-col">
+            <div className="w-full navbar bg-base-100">
+              <div className="flex-none lg:hidden">
+                <label htmlFor="my-drawer" className="btn btn-square btn-ghost">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-6 h-6 stroke-current"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </label>
+              </div>
+              <div className="flex-1 px-2 mx-2">Resource Library</div>
+            </div>
+            {children}
+          </div>
+          <div className="drawer-side">
+            <label htmlFor="my-drawer" className="drawer-overlay"></label>
+            <ul className="menu p-4 w-80 bg-base-100">
+              <li><Link href="/">Dashboard</Link></li>
+              <li><Link href="/crm">CRM</Link></li>
+              <li><Link href="/test">TEST</Link></li>
+              <li><Link href="/sales">Sales</Link></li>
+            </ul>
+          </div>
         </div>
       </main>
 
